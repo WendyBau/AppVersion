@@ -1,0 +1,19 @@
+FROM 985228147611.dkr.ecr.us-west-2.amazonaws.com/maven
+
+ENV REGION=us-west-2
+ENV port=8080
+
+EXPOSE 8080
+
+COPY Keepcash-Secrets /app/secrets
+
+RUN mvn -f /app/secrets/pom.xml clean install
+
+COPY src/ /app/src
+COPY pom.xml /app
+
+WORKDIR /app
+
+RUN mvn clean install -Dmaven.test.skip=true
+
+CMD [ java, -jar, -Dspring.profiles.active=dev, /app/target/Payment-Processor-0.0.3.jar ]
